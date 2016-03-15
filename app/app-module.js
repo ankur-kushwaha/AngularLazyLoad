@@ -8,6 +8,10 @@
    */
   angular
     .module('angularLazyLoad', [
-      'ui.router'
+      'ui.router',
+	  'oc.lazyLoad',
+      'catalog',
+      'orders',
+      'common'
     ]);
 }());

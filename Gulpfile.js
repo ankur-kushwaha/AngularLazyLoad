@@ -21,7 +21,8 @@ $ = require('gulp-load-plugins')({
   'streamqueue',
   'uglify-save-license',
   'wiredep',
-  'yargs'
+  'yargs',
+  'merge-stream'
   ]
 });
 

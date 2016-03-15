@@ -7,8 +7,9 @@ var _ = require('underscore.string')
   , bowerDir = JSON.parse(fs.readFileSync('.bowerrc')).directory + path.sep;
 
 module.exports = function (gulp, $, config) {
-  var isProd = $.yargs.argv.stage === 'prod';
-
+  //var isProd = $.yargs.argv.stage === 'prod';
+	var isProd=true;
+	
   // delete build directory
   gulp.task('clean', function () {
     return $.del(config.buildDir);
@@ -60,33 +61,53 @@ module.exports = function (gulp, $, config) {
 
   // compile scripts and copy into build directory
   gulp.task('scripts', ['clean', 'analyze', 'markup'], function () {
-    var htmlFilter = $.filter('**/*.html', {restore: true})
-      , jsFilter = $.filter('**/*.js', {restore: true});
+      
+    function getFolders(dir) {
+    return fs.readdirSync(dir)
+      .filter(function(file) {
+        return fs.statSync(path.join(dir, file)).isDirectory();
+      });
+	}
+	
+	var folders = getFolders(config.appDir);
+
+	var tasks = folders.map(function(folder) {   
 
     return gulp.src([
-      config.appScriptFiles,
-      config.buildDir + '**/*.html',
-      '!**/*_test.*',
-      '!**/index.html'
-    ])
+		path.join(config.appDir, folder, '/**/*.js'),
+		'!/**/*-module.js',
+		'!/**/*-routes.js',
+        '!**/*_test.*',
+      ])
       .pipe($.sourcemaps.init())
-      .pipe($.if(isProd, htmlFilter))
-      .pipe($.if(isProd, $.ngHtml2js({
-        // lower camel case all app names
-        moduleName: _.camelize(_.slugify(_.humanize(require('../package.json').name))),
-        declareModule: false
-      })))
-      .pipe($.if(isProd, htmlFilter.restore))
-      .pipe(jsFilter)
+      .pipe($.if(isProd, $.angularFilesort()))
+      .pipe($.if(isProd, $.concat(folder+'.js')))
+      .pipe($.if(isProd, $.ngAnnotate()))
+      .pipe($.if(isProd, $.uglify()))
+      //.pipe($.if(isProd, $.rev()))
+      .pipe($.sourcemaps.write('.'))
+      .pipe(gulp.dest(config.buildJs));
+	});
+	
+	// process all remaining files in scriptsPath root into main.js and main.min.js files
+   var root = gulp.src([
+		path.join(config.appDir, '*.js'),
+		path.join(config.appDir, '**/*-module.js'),
+		path.join(config.appDir, '**/*-routes.js'),
+      '!**/*_test.*',
+      ])
+      .pipe($.sourcemaps.init())
       .pipe($.if(isProd, $.angularFilesort()))
       .pipe($.if(isProd, $.concat('app.js')))
       .pipe($.if(isProd, $.ngAnnotate()))
       .pipe($.if(isProd, $.uglify()))
       .pipe($.if(isProd, $.rev()))
       .pipe($.sourcemaps.write('.'))
-      .pipe(gulp.dest(config.buildJs))
-      .pipe(jsFilter.restore);
+      .pipe(gulp.dest(config.buildJs));
+		
+    return $.mergeStream(tasks, root);
   });
+	
 
   // inject custom CSS and JavaScript into index.html
   gulp.task('inject', ['markup', 'styles', 'scripts'], function () {
@@ -95,7 +116,7 @@ module.exports = function (gulp, $, config) {
     return gulp.src(config.buildDir + 'index.html')
       .pipe($.inject(gulp.src([
           config.buildCss + '**/*',
-          config.buildJs + '**/*'
+          config.buildJs + '/app-*.js'
         ])
         .pipe(jsFilter)
         .pipe($.angularFilesort())
@@ -232,10 +253,10 @@ module.exports = function (gulp, $, config) {
   gulp.task('deleteTemplates', ['copyTemplates'], function (cb) {
     // only delete templates in production
     // the templates are injected into the app during prod build
-    if (!isProd) {
+   // if (!isProd) {
       return cb();
-    }
-
+    //}
+	
     gulp.src([config.buildDir + '**/*.html'])
       .pipe(gulp.dest('tmp/' + config.buildDir))
       .on('end', function () {
