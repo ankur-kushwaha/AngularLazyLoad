@@ -116,7 +116,8 @@ module.exports = function (gulp, $, config) {
     return gulp.src(config.buildDir + 'index.html')
       .pipe($.inject(gulp.src([
           config.buildCss + '**/*',
-          config.buildJs + '/app-*.js'
+          config.buildJs + '/app-*.js',
+		  config.buildJs + '/common*.js'
         ])
         .pipe(jsFilter)
         .pipe($.angularFilesort())
