@@ -1,17 +1,9 @@
-(function () {
-  'use strict';
+(function() {
+	'use strict';
 
-  /* @ngdoc object
-   * @name angularLazyLoad
-   * @description
-   *
-   */
-  angular
-    .module('angularLazyLoad', [
-      'ui.router',
-	  'oc.lazyLoad',
-      'catalog',
-      'orders',
-      'common'
-    ]);
-}());
+	/*
+	 * @ngdoc object @name angularLazyLoad @description
+	 * 
+	 */
+	angular.module('angularLazyLoad', [ 'ui.router', 'oc.lazyLoad','ngProgress', 'catalog', 'orders', 'common' ])
+}()); 

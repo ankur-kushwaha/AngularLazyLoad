@@ -21,12 +21,12 @@ module.exports = function (gulp, $, config) {
         this.emit('end');
       }}))
       .pipe(jsFilter)
-      .pipe($.eslint())
-      .pipe($.eslint.formatEach('./node_modules/eslint-path-formatter'))
-      .pipe($.eslint.failOnError())
+      //.pipe($.eslint())
+      //.pipe($.eslint.formatEach('./node_modules/eslint-path-formatter'))
+      //.pipe($.eslint.failOnError())
       .pipe($.jshint())
-      .pipe($.jshint.reporter('jshint-stylish'))
-      .pipe($.jshint.reporter('fail'))
+      //.pipe($.jshint.reporter('jshint-stylish'))
+      //.pipe($.jshint.reporter('fail'))
       .pipe($.jscs());
   });
 
@@ -52,5 +52,6 @@ module.exports = function (gulp, $, config) {
     });
   });
 
-  gulp.task('analyze', ['lint', 'staticAnalysis']);
+  //gulp.task('analyze', ['lint', 'staticAnalysis']);
+  gulp.task('analyze');
 };

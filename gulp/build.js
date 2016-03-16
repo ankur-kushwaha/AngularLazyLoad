@@ -7,8 +7,8 @@ var _ = require('underscore.string')
   , bowerDir = JSON.parse(fs.readFileSync('.bowerrc')).directory + path.sep;
 
 module.exports = function (gulp, $, config) {
-  //var isProd = $.yargs.argv.stage === 'prod';
-	var isProd=true;
+    var isProd = $.yargs.argv.stage === 'prod';
+	//var isProd=true;
 	
   // delete build directory
   gulp.task('clean', function () {
@@ -80,10 +80,10 @@ module.exports = function (gulp, $, config) {
         '!**/*_test.*',
       ])
       .pipe($.sourcemaps.init())
-      .pipe($.if(isProd, $.angularFilesort()))
-      .pipe($.if(isProd, $.concat(folder+'.js')))
-      .pipe($.if(isProd, $.ngAnnotate()))
-      .pipe($.if(isProd, $.uglify()))
+      .pipe( $.angularFilesort())
+      .pipe( $.concat(folder+'.js'))
+      .pipe( $.ngAnnotate())
+      .pipe( $.uglify())
       //.pipe($.if(isProd, $.rev()))
       .pipe($.sourcemaps.write('.'))
       .pipe(gulp.dest(config.buildJs));
@@ -97,11 +97,11 @@ module.exports = function (gulp, $, config) {
       '!**/*_test.*',
       ])
       .pipe($.sourcemaps.init())
-      .pipe($.if(isProd, $.angularFilesort()))
-      .pipe($.if(isProd, $.concat('app.js')))
-      .pipe($.if(isProd, $.ngAnnotate()))
-      .pipe($.if(isProd, $.uglify()))
-      .pipe($.if(isProd, $.rev()))
+      .pipe( $.angularFilesort())
+      .pipe( $.concat('app.js'))
+      .pipe( $.ngAnnotate())
+      .pipe( $.uglify())
+      .pipe( $.rev())
       .pipe($.sourcemaps.write('.'))
       .pipe(gulp.dest(config.buildJs));
 		
